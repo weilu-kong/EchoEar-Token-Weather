@@ -54,7 +54,7 @@ idf.py -B /private/tmp/shanhai_echoear_v61_build build
 
 ## 代码地图
 
-- main/sh_ui.c：七页动态文字、触摸／手势、两项日历分页；main/generated：由素材脚本生成的布局和图像。
+- main/sh_ui.c：七页动态文字、触摸／手势、两项日历分页；main/sh_scene_data.h与main/sh_assets.c：由素材脚本生成的布局和图像。
 - main/sh_cloud.*：云任务、服务状态、刷新节奏、快照；main/sh_auth.*：NVS凭据、OAuth刷新和revision。
 - main/sh_http.*：共享HTTPS、证书、发送缓冲、响应大小／时限；main/sh_ai.*：各服务解析。
 - main/sh_calendar.*：Google日程获取、严格日期和UTF-8解析；网络／天气相关源码在main。
