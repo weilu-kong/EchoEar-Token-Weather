@@ -1,0 +1,54 @@
+[1/9] Performing build step for 'bootloader'
+[1/1] cd /private/tmp/shanhai_echoear_v61_build/bootloader && /Users/kongweilu/.espressif/python_env/idf6.1_py3.14_env/bin/python /Users/kongweilu/esp/esp-idf-v6.1_release/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /private/tmp/shanhai_echoear_v61_build/bootloader/bootloader.bin
+Bootloader binary size 0x50d0 bytes. 0x2f30 bytes (37%) free.
+[2/9] No install step for 'bootloader'
+[3/9] Completed 'bootloader'
+[4/9] Building C object esp-idf/main/CMakeFiles/__idf_main.dir/sh_ui.c.obj
+[5/9] Linking C static library esp-idf/main/libmain.a
+[6/9] Generating esp-idf/esp_system/ld/sections.ld
+Skipping linker script generation, section names unchanged
+[7/9] Linking CXX executable shanhai_echoear_demo.elf
+[8/9] Generating binary image from built executable
+esptool v5.4.0
+Creating ESP32-S3 image...
+Merged 3 ELF sections.
+Successfully created ESP32-S3 image.
+Generated /private/tmp/shanhai_echoear_v61_build/shanhai_echoear_demo.bin
+[9/9] cd /private/tmp/shanhai_echoear_v61_build && /Users/kongweilu/.espressif/python_env/idf6.1_py3.14_env/bin/python /Users/kongweilu/esp/esp-idf-v6.1_release/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /private/tmp/shanhai_echoear_v61_build/partition_table/partition-table.bin /private/tmp/shanhai_echoear_v61_build/shanhai_echoear_demo.bin
+Warning: 1/2 app partitions are too small for binary shanhai_echoear_demo.bin size 0x5f7350:
+  - Part 'board_test' 0/16 @ 0x890000 size 0x190000 (overflow 0x467350)
+[0/1] cd /private/tmp/shanhai_echoear_v61_build && /opt/homebrew/bin/cmake -D "IDF_SIZE_TOOL=/Users/kongweilu/.espressif/python_env/idf6.1_py3.14_env/bin/python;-m;esp_idf_size" -D MAP_FILE=/private/tmp/shanhai_echoear_v61_build/shanhai_echoear_demo.map -D OUTPUT_JSON= -P /Users/kongweilu/esp/esp-idf-v6.1_release/tools/cmake/run_size_tool.cmake
+                           Memory Type Usage Summary                            
+┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃ Memory            ┃              ┃          ┃                ┃               ┃
+┃ Type/Section      ┃ Used [bytes] ┃ Used [%] ┃ Remain [bytes] ┃ Total [bytes] ┃
+┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ Flash Data        │      4823208 │          │                │               │
+│    .rodata        │      4822936 │          │                │               │
+│    .appdesc       │          256 │          │                │               │
+│    .tdata         │           16 │          │                │               │
+│ Flash Code        │      1281278 │          │                │               │
+│    .text          │      1281278 │          │                │               │
+│ DIRAM             │       201526 │    58.97 │         140234 │        341760 │
+│    .text          │       109799 │    32.13 │                │               │
+│    .bss           │        67104 │    19.63 │                │               │
+│    .data          │        24623 │      7.2 │                │               │
+│ IRAM              │        16384 │    100.0 │              0 │         16384 │
+│    .text          │        15356 │    93.73 │                │               │
+│    .vectors       │         1028 │     6.27 │                │               │
+│ RTC SLOW          │           36 │     0.44 │           8156 │          8192 │
+│    .force_slow    │           36 │     0.44 │                │               │
+│ RTC FAST          │           24 │     0.29 │           8168 │          8192 │
+│    .rtc_reserved  │           24 │     0.29 │                │               │
+└───────────────────┴──────────────┴──────────┴────────────────┴───────────────┘
+Total image size: 6255328 bytes (.bin may be padded larger)
+Note: The reported total sizes may be smaller than those in the technical 
+reference manual due to reserved memory and application configuration. The total
+flash size available for the application is not included by default, as it 
+cannot be reliably determined due to the presence of other data like the 
+bootloader, partition table, and application partition size.
+Executing action: size
+Running ninja in directory /private/tmp/shanhai_echoear_v61_build
+Executing "ninja all"...
+Running ninja in directory /private/tmp/shanhai_echoear_v61_build
+Executing "ninja size"...

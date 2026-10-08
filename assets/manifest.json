@@ -1,0 +1,66 @@
+{
+  "stage": "visual-review",
+  "size": [
+    360,
+    360
+  ],
+  "backgrounds": {
+    "home": {
+      "bytes": 259200,
+      "sha256": "245eeb4bf197b53568bd884e1932bbeeba5e23ece0e1ac632f557afac789d1f0",
+      "format": "RGB565 little-endian"
+    },
+    "weather": {
+      "bytes": 259200,
+      "sha256": "4bdaeb17e869cf1aa0a751228f2870a7ce8443dd7111e901081a66fb6a8529d4",
+      "format": "RGB565 little-endian"
+    },
+    "quota": {
+      "bytes": 259200,
+      "sha256": "7a9f29e4cf54ca45c0aeff0f59a4efe51eb8adea72d6dfb5c7adecd464b5ea11",
+      "format": "RGB565 little-endian"
+    },
+    "detail": {
+      "bytes": 259200,
+      "sha256": "9a8f37e2e19f922c1a5abc3116418b29c744c4030bf713c5c19a5991075f353e",
+      "format": "RGB565 little-endian"
+    },
+    "standby": {
+      "bytes": 259200,
+      "sha256": "f708d325fec8acb9b6dcb2ca8ffcfb17c9fad2e570d1e5a2b103a9c6bd733afa",
+      "format": "RGB565 little-endian"
+    }
+  },
+  "logos": {
+    "codex": {
+      "bytes": 2961,
+      "sha256": "b94ea61d860fae6f82f43571f36f17111fcf5d348e8e9cc22ae4b441c7560011"
+    },
+    "antigravity": {
+      "bytes": 5301,
+      "sha256": "d775965ea1f8060538c15f758a3e22487317211fcb6051333b5e023f35aa726f"
+    },
+    "claude": {
+      "bytes": 1967,
+      "sha256": "9008f1356f987e896f91c745ef684d752cedc2aaa877c3518a3e1818566e9ad5"
+    },
+    "cursor": {
+      "bytes": 793,
+      "sha256": "cd0e3e5d8991a4cdd4577f8896cd063105207665165c73e25a1ff918dd367eb7"
+    }
+  },
+  "sdk": {
+    "branch": "release/v6.1",
+    "commit": "9a97f6c54ec638111ce55cd36581b3c192f15207"
+  },
+  "font": {
+    "family": "Noto Sans JP",
+    "woff2_bytes": 10058828,
+    "lcd_missing_glyphs": []
+  },
+  "qr": {
+    "preview_only": true,
+    "version": 6,
+    "quiet_zone_modules": 4
+  }
+}

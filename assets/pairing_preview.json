@@ -1,0 +1,7 @@
+{
+  "ver": "v1",
+  "name": "PROV_DEMO",
+  "pop": "preview-only",
+  "transport": "ble",
+  "network": "wifi"
+}

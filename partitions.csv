@@ -1,0 +1,13 @@
+# Original EchoEar v1.2 layout. Preserve existing NVS and asset ranges.
+# Name,Type,SubType,Offset,Size,Flags
+nvs_key,1,4,0xf000,0x1000,
+fctry,1,2,0x10000,0x6000,
+nvs,1,2,0x16000,0x6000,
+otadata,1,0,0x1c000,0x2000,
+phy_init,1,1,0x1e000,0x1000,
+model,1,130,0x1f000,0x96000,
+factory,0,0,0xc0000,0x7d0000,
+board_test,0,16,0x890000,0x190000,
+spiffs_data,1,130,0xa20000,0xc8000,
+anim_icon,1,130,0xae8000,0x271000,
+anim_boot,1,130,0xd59000,0xb9000,

@@ -1,0 +1,30 @@
+#pragma once
+#include "lvgl.h"
+const lv_font_t *sh_font(int size,int weight);
+const lv_image_dsc_t *sh_icon(const char *name);
+extern const lv_image_dsc_t sh_bg_home;
+extern const lv_image_dsc_t sh_bg_weather;
+extern const lv_image_dsc_t sh_bg_quota;
+extern const lv_image_dsc_t sh_bg_detail;
+extern const lv_image_dsc_t sh_bg_standby;
+extern const lv_font_t sh_font_10_500;
+extern const lv_font_t sh_font_10_600;
+extern const lv_font_t sh_font_11_500;
+extern const lv_font_t sh_font_12_500;
+extern const lv_font_t sh_font_12_600;
+extern const lv_font_t sh_font_13_500;
+extern const lv_font_t sh_font_13_600;
+extern const lv_font_t sh_font_14_500;
+extern const lv_font_t sh_font_14_600;
+extern const lv_font_t sh_font_15_500;
+extern const lv_font_t sh_font_15_600;
+extern const lv_font_t sh_font_16_600;
+extern const lv_font_t sh_font_17_600;
+extern const lv_font_t sh_font_18_600;
+extern const lv_font_t sh_font_19_600;
+extern const lv_font_t sh_font_25_600;
+extern const lv_font_t sh_font_32_700;
+extern const lv_font_t sh_font_38_700;
+extern const lv_font_t sh_font_44_700;
+extern const lv_font_t sh_font_45_700;
+extern const lv_font_t sh_font_48_700;

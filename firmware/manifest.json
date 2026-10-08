@@ -1,0 +1,45 @@
+{
+  "sdk_branch": "release/v6.1",
+  "sdk_commit": "9a97f6c54ec638111ce55cd36581b3c192f15207",
+  "app_offset": "0xc0000",
+  "app_partition_bytes": 8192000,
+  "files": {
+    "shanhai_echoear_demo.bin": {
+      "bytes": 3591712,
+      "sha256": "ccebe0f3c77fbbc8d69f4dea9c982b0e31899ec985971e83f85e4b0b3afd6612"
+    },
+    "shanhai_echoear_demo.elf": {
+      "bytes": 19478664,
+      "sha256": "e4f0e6c61ed9575ccde9ced0adfbc5d7c5f5b1ba1eb6064de78706620f4c6ad8"
+    },
+    "shanhai_echoear_demo.map": {
+      "bytes": 14070444,
+      "sha256": "d87222916bb9e24ce50d767efa071f639f78357d10828833eed4f1c2c7cf05d2"
+    },
+    "bootloader/bootloader.bin": {
+      "bytes": 20688,
+      "sha256": "c46debd332343f1d28af9d01fbcd86f4a851da1707667043bc788aad9d886f5e"
+    },
+    "partition_table/partition-table.bin": {
+      "bytes": 3072,
+      "sha256": "a03076544b36e176fda6b85bae6884b62dcc3894c0aa9423f116bc38fff3d477"
+    },
+    "ota_data_initial.bin": {
+      "bytes": 8192,
+      "sha256": "7d2c7ac4888bfd75cd5f56e8d61f69595121183afc81556c876732fd3782c62f"
+    },
+    "config/sdkconfig.h": {
+      "bytes": 65408,
+      "sha256": "2d7e83741bb20134ccc400fad62ef32882998687045ae0772bbb91663d29b271"
+    },
+    "project_description.json": {
+      "bytes": 437051,
+      "sha256": "5fabc16781a69fc00f467f16e60251c726a6aae07990bf5245814ecaf10c593a"
+    },
+    "sdkconfig": {
+      "bytes": 128881,
+      "sha256": "4f97037becc2ca2af9928764ad1277f930377b4f6c248411b7ce6cefd8e49d8b"
+    }
+  },
+  "status": "development; acceptance paused by user"
+}

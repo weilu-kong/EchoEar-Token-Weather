@@ -1,0 +1,82 @@
+{
+  "pages": 5,
+  "states": 6,
+  "jsErrors": [],
+  "remoteRequests": [],
+  "geometry": [
+    {
+      "id": "home",
+      "textNodes": 7,
+      "issues": 0
+    },
+    {
+      "id": "weather",
+      "textNodes": 12,
+      "issues": 0
+    },
+    {
+      "id": "quota",
+      "textNodes": 9,
+      "issues": 0
+    },
+    {
+      "id": "detail",
+      "textNodes": 9,
+      "issues": 0
+    },
+    {
+      "id": "standby",
+      "textNodes": 3,
+      "issues": 0
+    },
+    {
+      "id": "network",
+      "textNodes": 7,
+      "issues": 0
+    },
+    {
+      "id": "forget-confirm",
+      "textNodes": 5,
+      "issues": 0
+    },
+    {
+      "id": "pairing",
+      "textNodes": 4,
+      "issues": 0
+    },
+    {
+      "id": "pairing-error",
+      "textNodes": 6,
+      "issues": 0
+    },
+    {
+      "id": "weather-stale",
+      "textNodes": 13,
+      "issues": 0
+    },
+    {
+      "id": "weather-empty",
+      "textNodes": 12,
+      "issues": 0
+    }
+  ],
+  "checks": [
+    "navigation",
+    "swipe",
+    "quota-zero",
+    "quota-full",
+    "quota-no-total",
+    "quota-total-edit",
+    "weather-zero",
+    "weather-empty",
+    "weather-unknown-icon",
+    "disconnect",
+    "home-disconnected",
+    "reconnect",
+    "forget-confirmation",
+    "keyboard-confirmation",
+    "reprovision",
+    "pairing-idle",
+    "standby-wake"
+  ]
+}

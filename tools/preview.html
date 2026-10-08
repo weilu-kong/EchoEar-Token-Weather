@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>山海司天 · EchoEar UI Preview</title>
+<style>
+@font-face{font-family:Shanhai;src:url(data:font/woff2;base64,__FONT__) format('woff2');font-weight:100 900;font-display:block}
+*{box-sizing:border-box} :root{color-scheme:dark;--gold:#e6c784;--muted:#8faba7;--border:#25413f;--aqua:#68e7cf}
+body{margin:0;background:radial-gradient(ellipse at 10% 0,#123c3c77,transparent 58%),#030d13;color:#ecede4;font:14px Shanhai,system-ui,sans-serif}
+button,input,select{font:inherit} button{cursor:pointer} button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--aqua);outline-offset:4px}
+.wrap{max-width:1180px;margin:auto;padding:34px 28px 40px} header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #98754170;padding-bottom:20px;gap:20px}
+h1{font-size:34px;letter-spacing:.14em;color:var(--gold);margin:0;font-weight:700}.eyebrow{color:var(--gold);letter-spacing:.2em;font-size:10px;margin-bottom:6px}.subtitle{color:var(--muted);font-size:12px;margin:9px 0 0}.seal{font-size:11px;line-height:1.8;border:1px solid #916d3d80;border-radius:4px;padding:9px 14px;color:#e0c996}
+.main{display:grid;grid-template-columns:430px 1fr;gap:34px;margin-top:28px;align-items:start}.viewer{border:1px solid var(--border);border-radius:16px;background:linear-gradient(160deg,#0b202480,#02070aaa);padding:24px 20px;text-align:center}.device{display:inline-block;line-height:0;border-radius:50%;box-shadow:0 0 50px #0009;background:#000}.device canvas{width:360px;height:360px;display:block;border-radius:50%;touch-action:none;cursor:pointer}
+.screen-name{font-size:17px;color:var(--gold);margin:17px 0 4px}.screen-caption{font-size:11px;color:var(--muted);margin:0}.nav{display:flex;justify-content:center;gap:10px;margin:18px 0 12px} .nav button,.action{border:1px solid #4c6156;border-radius:7px;background:#10272a;color:#f0e4c7;padding:8px 16px}.hint{font-size:11px;color:var(--muted);line-height:1.9;min-height:42px;margin:0}.screen-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:9px 0 12px}.screen-actions button{font-size:10px;padding:6px 9px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.page-card{background:#07151a;border:1px solid var(--border);color:#bed0c8;border-radius:12px;padding:12px 6px 10px;transition:border-color .15s;text-align:center}.page-card.active{border-color:var(--gold);background:#122324}.page-card canvas{display:block;width:132px;height:132px;margin:0 auto 8px;border-radius:50%}.page-card span{font-size:11px}
+.note{margin:20px 0 0;padding:14px 16px;border-left:2px solid #bc9b58;background:#18261a55;font-size:11px;color:#a8bdb3;line-height:1.85}.note b{color:#dfc995}.controls{margin-top:25px;border:1px solid var(--border);border-radius:12px;padding:17px 18px;background:#06171bbf}.controls h2{font-size:13px;color:var(--gold);font-weight:600;margin:0 0 13px}.rows{display:grid;grid-template-columns:1fr 1fr;gap:15px}.control{display:flex;flex-direction:column;gap:7px;font-size:11px;color:var(--muted)} .control input,.control select{min-width:0;width:100%;padding:7px 8px;border:1px solid #345050;background:#0c2328;border-radius:5px;color:#f7ecd4}.control .inline{display:flex;align-items:center;gap:10px}.control input[type=checkbox]{width:auto;accent-color:var(--aqua)}.control input[type=range]{accent-color:var(--aqua);padding:0}.control output{color:#f0ddad}.network-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}.network-actions button{font-size:11px;padding:8px 10px}.footer{font-size:10px;color:#7f9c97;margin:22px 0 0;text-align:center;line-height:1.9}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(max-width:950px){.main{grid-template-columns:1fr}.viewer{max-width:440px;justify-self:center;width:100%}.grid{grid-template-columns:repeat(5,1fr)}.page-card canvas{width:100%;height:auto}.page-card span{font-size:10px}}
+@media(max-width:520px){.wrap{padding:22px 10px}header{align-items:start}h1{font-size:27px}.seal{display:none}.viewer{padding:20px 0;width:100%;border:0;background:none}.device canvas{width:min(360px,94vw);height:auto}.grid{grid-template-columns:repeat(3,1fr)}.rows{grid-template-columns:1fr 1fr}.main{gap:18px}.subtitle{font-size:10px}}
+</style>
+<div class="wrap">
+<header><div><div class="eyebrow">SHANHAI · ECHOEAR</div><h1>山海司天</h1><p class="subtitle">山海を鏡に、天象を観る。知と暮らしをつなぐ。</p></div><div class="seal">ESP32-S3 · 360 × 360<br>UI REVIEW · 01</div></header>
+<main class="main">
+<section class="viewer" aria-label="360ピクセルの画面プレビュー">
+<div class="device"><canvas id="lcd" width="360" height="360" tabindex="0" role="img" aria-label="EchoEar画面" aria-describedby="readout">Canvas対応ブラウザでプレビューしてください。</canvas></div>
+<h2 class="screen-name" id="screen-name"></h2><p class="screen-caption" id="screen-caption"></p>
+<div class="nav"><button id="prev" aria-label="前の画面">←</button><button id="home" aria-label="ホーム画面">ホーム</button><button id="next" aria-label="次の画面">→</button><button id="network" aria-label="ネットワーク設定">Wi-Fi</button></div>
+<div id="screen-actions" class="screen-actions" role="group" aria-label="画面内操作のキーボード用ボタン"></div>
+<p class="hint" id="hint"></p><div id="readout" class="sr" aria-live="polite"></div>
+</section>
+<section>
+<div class="grid" id="page-grid"></div>
+<p class="note"><b>离线交互预览 · 与固件共用素材</b><br>圆屏内为日文界面；背景、品牌图标、动态文字和进度环分层合成。当前天气、额度和时间均为展示样例，网络操作为模拟。此 HTML 完全离线，不连接设备或服务。</p>
+<section class="controls" aria-label="プレビュー操作">
+<h2>预览控制</h2>
+<div class="rows">
+<label class="control">服务<select id="provider"></select></label>
+<label class="control">天气状态<select id="weather-state"><option value="ready">正常样例</option><option value="stale">更新失败，保留旧数据</option><option value="empty">还没有天气数据</option></select></label>
+<label class="control">剩余额度<input id="remaining" type="number" min="0" max="1000000000" step="1"></label>
+<label class="control">额度上限<input id="total" type="number" min="0" max="1000000000" step="1"></label>
+<label class="control"><span class="inline"><input id="has-total" type="checkbox">已知额度上限</span><span>未知上限时不显示百分比</span></label>
+<label class="control">温度 <output id="temp-output">23°C</output><input id="temperature" type="range" min="-20" max="45" value="23"></label>
+<label class="control">样例时间<input id="clock-input" type="time" value="10:28"></label>
+<label class="control"><span class="inline"><input id="idle-enabled" type="checkbox" checked>45 秒自动待机</span><span>配网时保持二维码可见</span></label>
+</div>
+<div class="network-actions"><button class="action" id="simulate-success">演示配网成功</button><button class="action" id="simulate-failure">演示密码错误</button><button class="action" id="show-pairing">查看配网二维码</button><button class="action" id="reset">恢复样例</button></div>
+</section>
+</section>
+</main>
+<p class="footer">轻点四宫格进入服务详情 · 轻点详情圆环切换服务 · 左右滑动切页 · 待机画面轻点唤醒<br>网络二维码仅供版式与扫码内容检查，无法实际配网。UI 确认后再开发 ESP-IDF release/v6.1 固件。</p>
+</div>
+<script>const SCENE = __SCENE__; const ASSETS = __ASSETS__;</script>
+<script>__SCRIPT__</script>
+</html>

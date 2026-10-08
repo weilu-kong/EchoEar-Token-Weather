@@ -1,0 +1,50 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const root=require('node:path').resolve(__dirname,'..');
+(async()=>{
+ const browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{})});
+ try{
+ const page=await browser.newPage({viewport:{width:1280,height:1100}});
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.setContent(fs.readFileSync(root+'/SHANHAI_離線プレビュー.html','utf8'),{waitUntil:'load'});
+ await page.waitForFunction(()=>window.previewReady);
+ await page.evaluate(()=>{idleEnabled=false;navigate('calendar');});
+ assert.match(await page.locator('#readout').textContent(),/车检.*解约 Claude/);
+ assert.equal(await page.evaluate(()=>calendarTextHeight({key:'event_title:0'},false)),54);
+ assert.equal(await page.evaluate(()=>calendarTextHeight({key:'event_time:0'},false)),27);
+ await page.evaluate(()=>changeCalendarPage(1));
+ assert.equal(await page.evaluate(()=>calendarOffset),2);
+ assert.match(await page.locator('#readout').textContent(),/開発集中日.*開発定例/);
+ await page.evaluate(()=>changeCalendarPage(1));
+ assert.equal(await page.evaluate(()=>calendarOffset),4);
+ await page.evaluate(()=>{action('event:1');});
+ assert.equal(await page.evaluate(()=>selectedEvent),5);
+ assert.equal(await page.evaluate(()=>currentPage),'event');
+ await page.evaluate(()=>action('calendar'));
+ assert.equal(await page.evaluate(()=>calendarOffset),4);
+ // Twelve events never add list nodes/bindings: visible slots stay at two.
+ await page.evaluate(()=>{calendar.events=Array.from({length:12},(_,i)=>({...SCENE.calendar.events[0],title:`予定 ${i+1}`}));calendarOffset=0;draw();for(let i=0;i<10;i++)changeCalendarPage(1);});
+ assert.equal(await page.evaluate(()=>calendarOffset),10);
+ assert.match(await page.locator('#readout').textContent(),/予定 11.*予定 12/);
+ assert.equal(await page.evaluate(()=>SCENE.pages[5].nodes.filter(n=>n.key?.startsWith('event_title:')).length),2);
+ await page.evaluate(()=>action('event:1'));
+ assert.equal(await page.evaluate(()=>selectedEvent),11);
+ await page.evaluate(()=>{action('calendar');calendar.events.length=3;draw();});
+ assert.equal(await page.evaluate(()=>calendarOffset),2);
+ assert.match(await page.locator('#readout').textContent(),/3–3 \/ 3/);
+ await page.evaluate(()=>{calendar.events=[];draw();});
+ assert.equal(await page.evaluate(()=>calendarOffset),0);
+ await page.evaluate(()=>resetDemo());await page.evaluate(()=>navigate('calendar'));
+ const box=await page.locator('#lcd').boundingBox();
+ await page.mouse.move(box.x+180,box.y+275);await page.mouse.down();await page.mouse.move(box.x+180,box.y+150,{steps:5});await page.mouse.up();
+ assert.equal(await page.evaluate(()=>calendarOffset),2);
+ await page.mouse.move(box.x+180,box.y+150);await page.mouse.down();await page.mouse.move(box.x+180,box.y+275,{steps:5});await page.mouse.up();
+ assert.equal(await page.evaluate(()=>calendarOffset),0);
+ await page.mouse.move(box.x+275,box.y+180);await page.mouse.down();await page.mouse.move(box.x+100,box.y+180,{steps:5});await page.mouse.up();
+ assert.equal(await page.evaluate(()=>currentPage),'event');
+ await page.evaluate(()=>{selectedEvent=1;navigate('event');});
+ assert.deepEqual(errors,[]);
+ console.log('PASS calendar only: 2 visible rows; full font heights; 12/odd/empty paging; absolute detail index; vertical/horizontal gestures; no JS errors. No hardware or overall acceptance.');
+ }finally{await browser.close();}
+})().catch(e=>{console.error(e.message);process.exit(1)});

@@ -1,0 +1,4 @@
+Pillow==12.3.0
+qrcode==8.2
+fonttools[woff]==4.66.1
+pyserial==3.5

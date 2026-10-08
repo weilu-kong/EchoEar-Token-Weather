@@ -1,0 +1,20 @@
+{
+  "sdk": "release/v6.1",
+  "sdk_commit": "9a97f6c54ec638111ce55cd36581b3c192f15207",
+  "app_offset": "0xc0000",
+  "app_bytes": 6255472,
+  "app_partition_bytes": 8192000,
+  "app_sha256": "87dd691c0523f08c0fe46c5847092f98c91489dc6ee9f1af6ad7e6ef696e9965",
+  "status": "calendar pagination and quota fixes flashed; app-only write verified",
+  "google_oauth": "independent read-only session imported over USB",
+  "ai_accounts": "independent Codex and Cursor sessions imported; Claude/Antigravity not provisioned",
+  "flash_instruction": "App-only at 0xc0000; never erase original partitions",
+  "static_diram_bytes": 201526,
+  "static_diram_remaining_bytes": 140234,
+  "runtime_heap_budget": "Short targeted observation only: internal 63663 bytes, largest 17408, PSRAM 16752724, UI stack watermark 3524; concurrency/soak acceptance paused",
+  "account_import": "redacted USB acknowledgements received for Google, Codex, Cursor",
+  "live_fetch_validation": "Targeted on-device refresh: Codex/Cursor/Google HTTP 200, ESP_OK, valid=1; full acceptance paused",
+  "cursor_team_scope": "independent selected-team session imported; default per-user included usage",
+  "calendar_max_events": 12,
+  "calendar_visible_events": 2
+}
