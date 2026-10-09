@@ -1,0 +1,18 @@
+{
+  "sdk": "release/v6.1",
+  "sdk_commit": "9a97f6c54ec638111ce55cd36581b3c192f15207",
+  "app_offset": "0xc0000",
+  "app_bytes": 6256624,
+  "app_partition_bytes": 8192000,
+  "app_sha256": "a8f6581bc9f4e8a3482168d0e921b6fddf79c949c7ea90774847cad1fc0b24a8",
+  "status": "Codex 15px window label flashed at 0xc0000; write hash verified",
+  "changes": [
+    "Cursor Models / Other Models usage percentages",
+    "AI detail moved left 14px and up 30px; opaque lower information panels",
+    "Single opaque footer with 22px row spacing and native one-line heights",
+    "Removed Codex balance line and Cursor TEAM usage-rate subtitle; smaller gold Cursor category inside ring",
+    "Codex primary window label 15px, native line height 19px"
+  ],
+  "credentials": "existing Google/Codex/Cursor device credentials retained; no new import",
+  "acceptance": "host parser/browser checks passed; full hardware acceptance paused"
+}

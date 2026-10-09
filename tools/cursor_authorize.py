@@ -169,7 +169,7 @@ def save_record(record):
 
 
 def fixture_checks():
-    """Synthetic checks only; not invoked while tests/acceptance remain paused."""
+    """Synthetic checks only; never starts login or accesses credential stores."""
     verifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
     assert challenge(verifier) == "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM"
     parameters = urllib.parse.parse_qs(urllib.parse.urlsplit(login_url("fixture", verifier)).query)

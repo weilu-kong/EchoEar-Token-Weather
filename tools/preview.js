@@ -11,7 +11,7 @@ let currentPage = 'home', selectedProvider = 2, overlay = null, clock = '10:28';
 let lastActivity = performance.now(), pointerStart = null;
 let idleEnabled = true;
 window.previewReady = false;
-const calendarLineHeight=SCENE.calendar_line_height, calendarBaseline=8;
+const calendarLineHeight=SCENE.calendar_line_height, calendarBaseline=SCENE.calendar_font_baseline;
 function calendarCount(){return calendar.valid?Math.min(calendar.events.length,12):0;}
 function clampCalendar(){const count=calendarCount();calendarOffset=Math.min(calendarOffset,count?Math.floor((count-1)/2)*2:0);if(selectedEvent>=count)selectedEvent=calendarOffset;}
 function changeCalendarPage(delta){
@@ -55,8 +55,10 @@ const stateLabels={ready:'接続済み',loading:'取得中',stale:'前回デー�
 function balance(p) {
   if(!p.valid)return stateLabels[p.state] || '未接続';
   if(p.unlimited)return '無制限';
-  if(p.percentOnly)return `残り ${quotaPercent(p)}%`;
-  return p.has_total ? `${amount(p.remaining)} / ${amount(p.total)} ${p.unit || ''}` : `${amount(p.remaining)} ${p.unit || ''}`;
+  if(p.cursorBuckets)return Number.isFinite(p.percent)?`残り ${quotaPercent(p)}%`:'Cursor Models 未提供';
+  if(Number.isFinite(p.percent))return `残り ${quotaPercent(p)}%`;
+  if(p.percentOnly)return '残量未提供';
+  return p.has_total ? `${amount(p.remaining)} / ${amount(p.total)}${p.demo?'':` ${p.unit || ''}`}` : `${amount(p.remaining)} ${p.unit || ''}`;
 }
 function quotaWindow(p){
   const minutes=p.window_minutes || 0;
@@ -116,17 +118,17 @@ function textValue(n, provider) {
     case 'highlow': return `↑ ${weatherValue('high', '°')}   ↓ ${weatherValue('low', '°')}`;
     case 'highlow_short': return `${weatherValue('high', '°')} / ${weatherValue('low', '°')}`;
     case 'condition': return condition();
-    case 'home_condition': return weather.status === 'stale' ? '更新失敗・前回データ' : condition();
+    case 'home_condition': return weather.status === 'stale' ? `更新失敗・${condition()}` : condition();
     case 'weather_updated': return weather.status === 'empty' ? 'Wi-Fi設定をご確認ください' : `最終更新 ${weather.updated}`;
     case 'service': return p.name;
     case 'balance': return balance(p);
-    case 'detail_main': return !p.valid?'--':p.unlimited?'∞':percent === null ? amount(p.remaining) : `${percent}%`;
-    case 'detail_balance': return balance(p);
-    case 'detail_unit': return !p.valid?'':p.demo?(p.has_total?'credits':'上限未提供'):quotaWindow(p);
+    case 'detail_main': if(p.cursorBuckets&&percent===null)return '--'; return !p.valid?'--':p.unlimited?'∞':percent === null ? amount(p.remaining) : `${percent}%`;
+    case 'detail_balance': if(p.id==='codex'||p.id==='claude')return ''; return p.cursorBuckets&&p.valid?'Cursor Models 残り':balance(p);
+    case 'detail_unit': if(p.id==='cursor')return ''; if((p.id==='codex'||p.id==='claude')&&!p.demo&&p.valid)return quotaWindow({...p,unit:''}); return !p.valid?'':p.demo?(p.has_total?'credits':'上限未提供'):quotaWindow(p);
     case 'service_state': return p.demo?'デモ値':stateLabels[p.state];
     case 'quota_status': return providers.some(p=>p.demo)?'デモ含む':'実データ';
-    case 'reset': return `リセット ${p.demo?'未提供':p.reset || '未提供'}`;
-    case 'secondary_reset': return !p.demo&&p.secondary?`${p.secondary.minutes/1440}日 残り ${p.secondary.percent}% ${p.secondary.reset || '未提供'}`:'';
+    case 'reset': if(p.cursorBuckets&&p.demo)return `リセット ${p.reset} (デモ)`; return `リセット ${p.demo?'未提供':p.reset || '未提供'}`;
+    case 'secondary_reset': if(p.cursorBuckets&&p.valid)return p.secondary&&Number.isFinite(p.secondary.percent)?`Other Models 残り ${Math.max(0,Math.min(100,p.secondary.percent))}%`:'Other Models 未提供'; return !p.demo&&p.secondary?`${p.secondary.minutes/1440}日 残り ${p.secondary.percent}% ${p.secondary.reset || '未提供'}`:'';
     case 'updated': return `更新 ${p.demo?'デモ値':p.updated || '未提供'}`;
     default: return '--';
   }
@@ -138,14 +140,15 @@ function plate(c, x, y, w, h, alpha = .8, border = '#c9aa6d66') {
 }
 function paintText(c, n, str, output) {
   let size = n.size || 14;
+  if(size<25)size+=SCENE.small_text_increment;
   c.save(); c.textAlign = 'center'; c.textBaseline = 'middle';
   c.font = `${n.weight || 500} ${size}px Shanhai`;
-  if (n.w && c.measureText(str).width > n.w) {
+  if (size >= 25 && n.w && c.measureText(str).width > n.w) {
     size *= n.w / c.measureText(str).width;
     c.font = `${n.weight || 500} ${size}px Shanhai`;
   }
   c.lineJoin = 'round'; c.strokeStyle = '#001016'; c.lineWidth = size >= 25 ? 2.8 : 2;
-  c.shadowColor = '#000'; c.shadowBlur = size >= 25 ? 6 : 3;
+  c.shadowColor = '#000'; c.shadowBlur = ['date','home_condition','highlow'].includes(n.key) ? 0 : size >= 25 ? 6 : 3;
   c.strokeText(str, n.x, n.y);
   c.fillStyle = n.color || '#fffaf0'; c.fillText(str, n.x, n.y);
   const m = c.measureText(str);
@@ -186,7 +189,7 @@ function calendarTextHeight(n, detail){
 }
 function paintCalendarText(c,n,str,output,detail=false){
   const height=calendarTextHeight(n,detail);
-  c.save();c.font='500 14px Shanhai';let lines=wrappedLines(c,str,n.w-2);
+  c.save();c.font='500 16px Shanhai';let lines=wrappedLines(c,str,n.w-2);
   if(!detail){
     const count=height/calendarLineHeight;
     if(lines.length>count){lines=lines.slice(0,count);let last=lines[count-1];while(last&&c.measureText(last+'…').width>n.w-2)last=last.slice(0,-1);lines[count-1]=last+'…';}
@@ -195,18 +198,18 @@ function paintCalendarText(c,n,str,output,detail=false){
   c.textAlign='left';c.textBaseline='alphabetic';c.fillStyle=n.color || '#fffaf0';
   const offset=detail&&n.key==='event_description'?Math.min(descriptionOffset,Math.max(0,lines.length*calendarLineHeight-height)):0;
   lines.forEach((line,i)=>c.fillText(line,n.x-n.w/2,n.y-height/2+calendarLineHeight-calendarBaseline+i*calendarLineHeight-offset));c.restore();
-  output?.push({text:str,box:[n.x-n.w/2,n.y-height/2,n.x+n.w/2,n.y+height/2],lines:lines.length,height});
+  output?.push({text:str,size:16,box:[n.x-n.w/2,n.y-height/2,n.x+n.w/2,n.y+height/2],lines:lines.length,height});
 }
 function renderPage(id, c, provider = selectedProvider, output = []) {
   const pg = SCENE.pages.find(p => p.id === id);
-  c.clearRect(0,0,360,360); c.drawImage(images[`bg:${pg.background}`],0,0,360,360);
+  c.fillStyle='#000';c.fillRect(0,0,360,360); c.drawImage(images[`bg:${pg.background}`],...SCENE.background_offset,360,360);
   for (const n of pg.nodes) {
     const ix = n.provider === 'selected' ? provider : n.provider;
     if (n.type === 'text') {
       const str=textValue({...n,provider:ix},provider);
       if(id==='event'&&n.key?.startsWith('event_'))paintCalendarText(c,n,str,output,true);
       else if(id==='calendar'&&n.key?.startsWith('event_'))paintCalendarText(c,n,str,output);
-      else paintText(c,n,str,output);
+      else paintText(c,id==='detail'&&(provider===0||provider===2)&&n.key==='detail_unit'?{...n,size:15,y:193}:n,str,output);
     }
     else if (n.type === 'panel') plate(c,n.x,n.y,n.w,n.h,n.alpha);
     else if (n.type === 'icon') {
@@ -274,8 +277,8 @@ function draw() {
   const pg=SCENE.pages.find(p=>p.id===currentPage);
   const output=[];
   if (overlay) {
-    ctx.clearRect(0,0,360,360);
-    ctx.drawImage(images[`bg:${pg.background}`],0,0,360,360);
+    ctx.fillStyle='#000';ctx.fillRect(0,0,360,360);
+    ctx.drawImage(images[`bg:${pg.background}`],...SCENE.background_offset,360,360);
     renderOverlay(ctx,output);
   } else renderPage(currentPage,ctx,selectedProvider,output);
   document.getElementById('readout').textContent=output.map(t=>t.text).join(' ');
@@ -327,7 +330,7 @@ function navigate(id, provider) {
 }
 function setQuota(index, remaining, total, hasTotal) {
   if (!Number.isInteger(index) || !providers[index] || !Number.isFinite(remaining) || !Number.isFinite(total) || remaining<0 || total<0 || remaining>1e9 || total>1e9) return false;
-  Object.assign(providers[index],{demo:true,valid:true,state:'ready',percentOnly:false,percent:undefined,unlimited:false,unit:'credits',remaining:Math.trunc(remaining),total:Math.trunc(total),has_total:!!hasTotal&&total>0});
+  Object.assign(providers[index],{cursorBuckets:false,demo:true,valid:true,state:'ready',percentOnly:false,percent:undefined,unlimited:false,unit:'credits',remaining:Math.trunc(remaining),total:Math.trunc(total),has_total:!!hasTotal&&total>0});
   syncControls();draw();return true;
 }
 function setWeather(update) {
@@ -420,7 +423,7 @@ function addCloudControls(){
   document.getElementById('quota-shape').onchange=e=>{
     const p=providers[selectedProvider],shape=e.target.value;
     if(shape==='demo'){setQuota(selectedProvider,p.remaining,p.total,p.has_total);return;}
-    Object.assign(p,{demo:false,state:shape==='stale'?'stale':['percent','dollars'].includes(shape)?'ready':shape,valid:['percent','dollars','stale'].includes(shape),percentOnly:shape!=='dollars',percent:shape==='dollars'?undefined:62,unlimited:false,unit:shape==='dollars'?'USD':'',window_minutes:300,secondary:shape==='dollars'?null:{minutes:10080,percent:78,reset:'10/15 10:20'},reset:'10/8 15:20',updated:'10/8 10:20',remaining:18.5,total:0,has_total:false});activity();syncControls();draw();
+    Object.assign(p,{cursorBuckets:false,demo:false,state:shape==='stale'?'stale':['percent','dollars'].includes(shape)?'ready':shape,valid:['percent','dollars','stale'].includes(shape),percentOnly:shape!=='dollars',percent:shape==='dollars'?undefined:62,unlimited:false,unit:shape==='dollars'?'USD':'',window_minutes:300,secondary:shape==='dollars'?null:{minutes:10080,percent:78,reset:'10/15 10:20'},reset:'10/8 15:20',updated:'10/8 10:20',remaining:18.5,total:0,has_total:false});activity();syncControls();draw();
   };
   document.getElementById('calendar-state').onchange=e=>{const state=e.target.value;calendar={...structuredClone(SCENE.calendar),state:state==='empty'?'ready':state,valid:['ready','empty','stale'].includes(state)};if(state==='empty')calendar.events=[];clampCalendar();activity();syncControls();draw();};
   for(const key of ['title','location','description'])document.getElementById(`event-${key}`).oninput=e=>{if(calendar.events[selectedEvent])calendar.events[selectedEvent][key]=e.target.value;activity();draw();};

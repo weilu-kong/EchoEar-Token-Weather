@@ -21,6 +21,7 @@ env={**os.environ,'SHARP_MODULE':os.environ.get('SHARP_MODULE','/Users/kongweilu
 subprocess.run([node,str(ROOT/'tools/rasterize_icons.cjs')],env=env,check=True)
 
 headers=['// Generated from approved tools/layout.json.','#pragma once','#include "lvgl.h"','#include <stdint.h>',
+ f'#define SH_BG_OFFSET_X {layout["background_offset"][0]}',f'#define SH_BG_OFFSET_Y {layout["background_offset"][1]}',f'#define SH_SMALL_TEXT_INCREMENT {layout["small_text_increment"]}',
  'typedef enum {SH_TEXT,SH_PANEL,SH_ICON,SH_LOGO,SH_RING,SH_LINE} sh_kind_t;',
  'typedef struct {uint8_t kind;int16_t x,y,w,h,size,weight,provider,radius,stroke;uint32_t color;uint8_t alpha;const char *text,*key,*icon;} sh_node_t;',
  'typedef struct {int16_t x,y,w,h;const char *action;} sh_hit_t;']
@@ -68,13 +69,14 @@ ui=(MAIN/'sh_ui.c').read_text() if (MAIN/'sh_ui.c').exists() else ''
 alltext=json.dumps(layout,ensure_ascii=False)+(ROOT/'tools/preview.js').read_text()+ui+'年月日月火水木金土時刻未同期接続設定読み込み中操作できません設定失敗'
 symbols=''.join(sorted(set(re.findall(r'[^\x00-\x7f]',alltext))))
 symbols+=''.join(chr(i) for i in range(32,127))+'°↑↓'
+pairs.update({(s+layout["small_text_increment"],w) for s,w in list(pairs) if s<25})
 for weight in sorted({w for s,w in pairs}):
  ttf=OUT/f'NotoSansJP-{weight}.ttf'
  if not ttf.exists():instantiateVariableFont(TTFont(ROOT/'assets/fonts/NotoSansJP.ttf'),{'wght':weight},inplace=True).save(ttf)
-for size,weight in sorted(pairs):
- name=f'sh_font_{size}_{weight}';dst=FONTS/f'{name}.c'
+for size,weight,calendar in [*((s,w,False) for s,w in sorted(pairs)),(16,500,True)]:
+ name='sh_font_calendar' if calendar else f'sh_font_{size}_{weight}';dst=FONTS/f'{name}.c'
  font_symbols=symbols if size<25 else '0123456789:%°C /.-kM∞'
- if (size,weight)==(14,500):font_symbols=None
+ if calendar:font_symbols=None
  source=OUT/f'NotoSansJP-{weight}.ttf'
  if font_symbols is None:
   source=OUT/'NotoSansCJKjp-500.ttf'

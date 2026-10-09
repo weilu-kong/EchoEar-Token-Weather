@@ -1,0 +1,23 @@
+{
+  "sdk": "release/v6.1",
+  "sdk_commit": "9a97f6c54ec638111ce55cd36581b3c192f15207",
+  "app_offset": "0xc0000",
+  "app_bytes": 6256848,
+  "app_partition_bytes": 8192000,
+  "app_sha256": "41bd540eb71a2282773f8bc95ec0321b653a50c8bcb0df0a8734cec687385d78",
+  "status": "Final +3/+7px background calibration flashed at 0xc0000; write hash verified",
+  "changes": [
+    "Cursor Models / Other Models usage percentages",
+    "AI detail moved left 14px and up 30px; opaque lower information panels",
+    "Single opaque footer with 22px row spacing and native one-line heights",
+    "Removed Codex balance line and Cursor TEAM usage-rate subtitle; smaller gold Cursor category inside ring",
+    "Codex primary window label 15px, native line height 19px",
+    "Separate non-Codex unit at y210 from balance at y190; Codex stays 15px at y193",
+    "AI token limit aligned with import/calendar: accepts 4096 bytes, bounded length check rejects overlong token",
+    "Home date y115, clock y147, city y180, temperature y211, condition y239, high/low y263",
+    "1px bitmap glyph outline for home weather condition and high/low temperatures; outline follows dynamic text updates",
+    "Shared background position +3px X/+7px Y aligns outer artwork frame with LCD center; text and touch positions unchanged"
+  ],
+  "credentials": "existing Google/Codex/Cursor device credentials retained; no new import",
+  "acceptance": "Five outer frame centers within 1px; seven-page browser checks, source/artifact checks and fixed SDK build passed; CRC-valid native page-0 frame center (180.84,180.03); physical LCD confirmation pending; full acceptance paused"
+}

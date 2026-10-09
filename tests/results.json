@@ -1,5 +1,5 @@
 {
-  "pages": 5,
+  "pages": 7,
   "states": 6,
   "jsErrors": [],
   "remoteRequests": [],
@@ -21,12 +21,42 @@
     },
     {
       "id": "detail",
-      "textNodes": 9,
+      "textNodes": 8,
+      "issues": 0
+    },
+    {
+      "id": "calendar",
+      "textNodes": 8,
+      "issues": 0
+    },
+    {
+      "id": "event",
+      "textNodes": 7,
       "issues": 0
     },
     {
       "id": "standby",
       "textNodes": 3,
+      "issues": 0
+    },
+    {
+      "id": "detail-provider-0",
+      "textNodes": 8,
+      "issues": 0
+    },
+    {
+      "id": "detail-provider-1",
+      "textNodes": 8,
+      "issues": 0
+    },
+    {
+      "id": "detail-provider-2",
+      "textNodes": 8,
+      "issues": 0
+    },
+    {
+      "id": "detail-provider-3",
+      "textNodes": 8,
       "issues": 0
     },
     {
@@ -52,6 +82,11 @@
     {
       "id": "weather-stale",
       "textNodes": 13,
+      "issues": 0
+    },
+    {
+      "id": "home-weather-stale",
+      "textNodes": 7,
       "issues": 0
     },
     {

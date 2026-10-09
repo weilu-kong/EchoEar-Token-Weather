@@ -90,9 +90,7 @@ session is read or modified; the tool does not set or use `HOME` or `CODEX_HOME`
 Import the resulting file separately using `tools/import_accounts.py --file` and
 the device's USB port. The tool performs no quota request or device import.
 
-`fixture_checks()` contains synthetic PKCE, callback and record checks but has
-not been executed. Browser login, independent refresh-token behavior, provider
-permission acceptance and device quota access remain unvalidated. Accounts
+`fixture_checks()` contains synthetic PKCE, callback and record checks; these now run through `tests/run_host_checks.sh`. Independent Codex login/import and on-device usage success are recorded in HANDOFF and validation; the synthetic checks do not replace live authorization or refresh validation. Accounts
 requiring FedRAMP routing are rejected because the current device adapter has a
 fixed ordinary ChatGPT endpoint.
 
@@ -182,7 +180,7 @@ The script suppresses callback/polling URLs, verifier, tokens, IDs and raw provi
 errors in terminal output, rejects redirects, and treats 403/429 as explicit
 errors. It requests privacy-mode polling headers and sends no machine identifiers
 or telemetry. `fixture_checks()` contains synthetic PKCE, token, selected-team
-normalization and invalid-ID checks; it has not been run. The first actual login
+normalization and invalid-ID checks; these now run through `tests/run_host_checks.sh`. The first actual login
 was rejected by the earlier personal-only tool because a team was selected; its
 tokens were not saved. The team-support change did not initiate another login,
 request provider quota data or run hardware checks.
@@ -299,5 +297,24 @@ the selected desktop session.
   `FetchAvailableModelsRequest/Response`, `QuotaInfo` protobuf descriptors and
   HTTP POST `/v1internal:fetchAvailableModels` binding.
 
-`tests/ai_account_test.c` contains synthetic parser fixtures and invalid-body
-checks. It was written but **not run**, in accordance with the testing pause.
+`tests/ai_account_test.c` contains synthetic parser fixtures and invalid-body checks. It now runs through `tests/run_host_checks.sh` with offline HTTP stubs and sanitizers; the overall hardware acceptance pause remains in force.
+
+## 2026-10-09 Cursor 两类额度与剩余登录路径复查
+
+安装官方Cursor的GetCurrentPeriodUsageResponse.PlanUsage schema包含auto_percent_used字段12、api_percent_used字段13（JSON为autoPercentUsed/apiPercentUsed）。UsageDataService原样传递两项；官方auto-spillover-ui.ts的autoTitle/apiTitle为Cursor Models/Other Models。本项目优先分别显示使用率，不再用总includedSpend/limit代替这两项；保留旧金额响应兼容性。超额正文保留原百分比，圆环仅限制在0–100；单项缺失显示未提供。截图的68%/11%仅用作明确标注的离线演示，真实固件不写死这些值。
+
+当日复查[Antigravity CLI安装与授权](https://www.antigravity.google/docs/cli/install/)说明本地安全存储登录以及远程SSH的URL/手动授权码流程；[官方/usage文档](https://www.antigravity.google/docs/cli/commands/usage)说明会刷新后端模型额度并显示TUI。这些页面没有公开设备客户端所需的完整client/scope/refresh/project/REST响应契约，本机未安装agy；未启动授权、安装新CLI或访问用户安全存储。后续应研究同一官方CLI路径，不能拼接不同客户端参数。
+
+[Claude官方认证与凭据使用边界](https://code.claude.com/docs/en/legal-and-compliance#authentication-and-credential-use)当日复查仍保留第三方登录/代管凭据限制。未新建Claude独立授权工具，两项设备服务仍未配置。
+
+## 用户重新确认的数据来源
+
+Gemini显示Antigravity中的Gemini Models每周/5小时剩余百分比；Claude显示用户自己在Claude桌面端/Claude Code登录的Claude账户订阅额度百分比（5小时/7天，按实际支持的窗口显示）。Antigravity内Claude and GPT组不代表这个独立Claude账户。API用量/余额及本地会话cost/token统计也不替代订阅剩余比例。前述静态客户端接口与parser证据不等于设备授权已完成。
+
+## Claude 本轮授权与真实读取
+
+用户完成官方CLAUDE_CONFIG_DIR隔离登录，并明确批准导出新会话到私有文件及导入设备。只读取隔离目录对应的Keychain服务，不读取日常桌面会话。主机只读usage HTTP200，原生C解析接受five_hour/seven_day；设备直接获取ESP_OK、valid=1。私有记录0600、响应和截图留.local并受Git忽略，不提交真实用量或令牌。当前读取成功不等于官方第三方设备支持，也不证明到期刷新/轮换成功；刷新实现保留，后续按实际到期验证。Gemini/Antigravity仍待接入。
+
+## Cursor 当前统一剩余显示
+
+用户最新要求总览/详情统一：主环及主数字显示Cursor Models剩余率，Other Models显示该类剩余率。内部数据仍为100-autoPercentUsed与100-apiPercentUsed；旧版详情的反转显示已删除。UI将负剩余限制为0、环/文字最多100%；原始解析允许超额使用，缺失字段不伪造0/100。旧文档的详情“使用率”描述是历史状态，以本节和HANDOFF为当前实现。

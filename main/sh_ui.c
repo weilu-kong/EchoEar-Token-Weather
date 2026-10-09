@@ -29,7 +29,7 @@ static lv_obj_t *root;
 static int page=0, selected=2, overlay=0;
 static uint32_t last_action, last_log;
 enum {O_NONE,O_NETWORK,O_CONFIRM,O_PAIR,O_ERROR};
-typedef struct {lv_obj_t *obj;const sh_node_t *node;uint32_t *pixels;int side,last_pct;char last[512];} binding_t;
+typedef struct {lv_obj_t *obj,*outline[8];const sh_node_t *node;uint32_t *pixels;int side,last_pct;char last[512];} binding_t;
 static binding_t bindings[36];
 static int binding_count;
 static void show(void);
@@ -90,9 +90,10 @@ static void balance(int p,char *out,size_t cap){
     const sh_service_data_t *q=&cloud.services[p];
     if(!q->valid){snprintf(out,cap,"%s",cloud_state(q->state));return;}
     if(q->unlimited)snprintf(out,cap,"無制限");
+    else if(q->has_percent)snprintf(out,cap,"残り %d%%",quota_percent(p));
+    else if(p==SH_CURSOR&&!q->has_balance)snprintf(out,cap,"未提供");
     else if(q->has_balance&&q->has_total)snprintf(out,cap,"%.2f / %.2f %s",q->balance,q->total,q->unit);
     else if(q->has_balance)snprintf(out,cap,"%.2f %s",q->balance,q->unit);
-    else if(q->has_percent)snprintf(out,cap,"残り %d%%",quota_percent(p));
     else snprintf(out,cap,"残量未提供");
 }
 static void event_time(const sh_calendar_event_t *event,char *out,size_t cap){
@@ -123,8 +124,10 @@ static void value(const sh_node_t *n,char *out,size_t cap){
     if(!strcmp(key,"reset")||!strcmp(key,"updated")||!strcmp(key,"secondary_reset")){
         if(demo_quota[p]&&!strcmp(key,"secondary_reset"))TEXT("%s","");
         if(demo_quota[p])TEXT("%s",!strcmp(key,"updated")?"更新 デモ値":"リセット 未提供");
+        if(!strcmp(key,"secondary_reset")&&p==SH_CURSOR&&q->valid&&!q->has_balance&&!q->has_secondary)TEXT("Other Models 未提供");
         if(!strcmp(key,"secondary_reset")&&!q->has_secondary)TEXT("%s","");
         char date[32];stamp(!strcmp(key,"updated")?q->updated_at:!strcmp(key,"secondary_reset")?q->secondary_reset_at:q->reset_at,date,sizeof(date));
+        if(!strcmp(key,"secondary_reset")&&p==SH_CURSOR&&!q->has_balance)TEXT("Other Models 残り %.0f%%",fmaxf(0,fminf(100,q->secondary_percent)));
         if(!strcmp(key,"secondary_reset")){char period[32];window(q->secondary_minutes,period,sizeof(period));TEXT("%s 残り %.0f%% %s",period,q->secondary_percent,date);}
         TEXT("%s %s",!strcmp(key,"updated")?"更新":!strcmp(key,"secondary_reset")?"第2リセット":"リセット",date);
     }
@@ -142,16 +145,18 @@ static void value(const sh_node_t *n,char *out,size_t cap){
         if(!strcmp(key,"event_description"))TEXT("%s",event->description[0]?event->description:"説明なし");
     }
     if(!strcmp(key,"detail_main")){int pct=quota_percent(p);if(pct>=0)TEXT("%d%%",pct);if(demo_quota[p]){amount(quotas[p].remaining,out,cap);return;}if(q->valid&&q->unlimited)TEXT("∞");if(q->valid&&q->has_balance)TEXT("%.2f",q->balance);TEXT("--");}
-    if(!strcmp(key,"detail_balance")){if(!demo_quota[p]&&!q->valid)TEXT("%s",cloud_state(q->state));balance(p,out,cap);return;}
+    if(!strcmp(key,"detail_balance")){if(p==SH_CODEX||p==SH_CLAUDE)TEXT("%s","");if(p==SH_CURSOR&&!demo_quota[p]&&q->valid&&!q->has_balance)TEXT("Cursor Models 残り");if(!demo_quota[p]&&!q->valid)TEXT("%s",cloud_state(q->state));balance(p,out,cap);return;}
     if(!strcmp(key,"detail_unit")){
+        if(p==SH_CURSOR)TEXT("%s","");
         if(demo_quota[p])TEXT("%s",quotas[p].has_total?"credits":"上限未提供");
         if(!q->valid)TEXT("%s","");
+        if(p==SH_CODEX||p==SH_CLAUDE){window(q->window_minutes,out,cap);return;}
         char first[32];if(q->window_label[0])snprintf(first,sizeof(first),"%s",q->window_label);else window(q->window_minutes,first,sizeof(first));
         TEXT("%s %s",q->unit,first);
     }
     if(!strcmp(key,"condition")||!strcmp(key,"home_condition")){
         if(!net.weather.valid)TEXT("天気を取得中");
-        if(!strcmp(key,"home_condition")&&net.weather.stale)TEXT("更新失敗・前回データ");
+        if(!strcmp(key,"home_condition")&&net.weather.stale)TEXT("更新失敗・%s",sh_weather_condition(net.weather.code));
         TEXT("%s",sh_weather_condition(net.weather.code));
     }
     if(!strcmp(key,"weather_updated")){
@@ -179,7 +184,7 @@ static void passive(lv_obj_t *obj){
 }
 static lv_obj_t *text(lv_obj_t *parent,const char *s,int x,int y,int width,int size,int weight,uint32_t color){
     lv_obj_t *obj=lv_label_create(parent);if(!obj)return NULL;
-    const lv_font_t *f=sh_font(size,weight);
+    const lv_font_t *f=sh_font(size<25?size+SH_SMALL_TEXT_INCREMENT:size,weight);
     lv_label_set_text(obj,s);lv_label_set_long_mode(obj,LV_LABEL_LONG_CLIP);
     lv_obj_set_width(obj,width);lv_obj_set_pos(obj,x-width/2,y-f->line_height/2);
     lv_obj_set_style_text_font(obj,f,0);lv_obj_set_style_text_color(obj,lv_color_hex(color),0);
@@ -301,7 +306,7 @@ static void show_overlay(void){
 }
 static void show(void){
     calendar_clamp();release_page();
-    lv_obj_t *bg=lv_image_create(root);lv_image_set_src(bg,backgrounds[page]);passive(bg);
+    lv_obj_t *bg=lv_image_create(root);lv_image_set_src(bg,backgrounds[page]);lv_obj_set_pos(bg,SH_BG_OFFSET_X,SH_BG_OFFSET_Y);passive(bg);
     if(overlay){show_overlay();return;}
     for(int i=0;i<sh_page_counts[page];i++){
         const sh_node_t *n=&sh_pages[page][i];binding_t *b=NULL;
@@ -309,9 +314,16 @@ static void show(void){
             if(binding_count>=36)continue;
             b=&bindings[binding_count++];b->node=n;b->last_pct=-2;
         }
-        if(n->kind==SH_TEXT){char s[512];value(n,s,sizeof(s));b->obj=text(root,s,n->x,n->y,n->w, n->size,n->weight,n->color);snprintf(b->last,sizeof(b->last),"%s",s);
+        if(n->kind==SH_TEXT){int size=(page==3&&(selected==SH_CODEX||selected==SH_CLAUDE)&&!strcmp(n->key,"detail_unit"))?15:n->size;char s[512];value(n,s,sizeof(s));int y=(page==3&&(selected==SH_CODEX||selected==SH_CLAUDE)&&!strcmp(n->key,"detail_unit"))?193:n->y;
+            /* Bitmap fonts ignore vector stroke styles; shifted glyphs form a 1px outline. */
+            if(page==0&&(!strcmp(n->key,"date")||!strcmp(n->key,"home_condition")||!strcmp(n->key,"highlow"))){
+                int k=0;for(int dy=-1;dy<=1;dy++)for(int dx=-1;dx<=1;dx++)if(dx||dy)
+                    b->outline[k++]=text(root,s,n->x+dx,y+dy,n->w,size,n->weight,0x001016);
+            }
+            b->obj=text(root,s,n->x,y,n->w,size,n->weight,n->color);snprintf(b->last,sizeof(b->last),"%s",s);
+            if(page==3)lv_obj_set_height(b->obj,sh_font(size<25?size+SH_SMALL_TEXT_INCREMENT:size,n->weight)->line_height);
             if(page>=5&&!strncmp(n->key,"event_",6)){
-                const lv_font_t *font=sh_font(14,500);
+                const lv_font_t *font=&sh_font_calendar;
                 lv_obj_set_style_text_font(b->obj,font,0);
                 lv_obj_set_style_text_align(b->obj,LV_TEXT_ALIGN_LEFT,0);
                 bool two_lines=!strncmp(n->key,"event_title",11)||!strcmp(n->key,"event_description");
@@ -345,7 +357,7 @@ static void show(void){
 static void refresh(void){
     for(int i=0;i<binding_count;i++){
         binding_t *b=&bindings[i];const sh_node_t *n=b->node;if(!b->obj)continue;
-        if(n->kind==SH_TEXT&&*n->key){char s[512];value(n,s,sizeof(s));if(strcmp(s,b->last)){lv_label_set_text(b->obj,s);snprintf(b->last,sizeof(b->last),"%s",s);}}
+        if(n->kind==SH_TEXT&&*n->key){char s[512];value(n,s,sizeof(s));if(strcmp(s,b->last)){for(int j=0;j<8;j++)if(b->outline[j])lv_label_set_text(b->outline[j],s);lv_label_set_text(b->obj,s);snprintf(b->last,sizeof(b->last),"%s",s);}}
         else if(n->kind==SH_ICON){const char *name=*n->icon?n->icon:sh_weather_icon(net.weather.code,net.weather.is_day,net.weather.valid);bool wifi_off=!strcmp(name,"wifi")&&!net.wifi_connected;if(wifi_off)name="wifi_off";if(strcmp(name,b->last)){lv_image_set_src(b->obj,sh_icon(name));lv_obj_set_style_image_recolor(b->obj,lv_color_hex(wifi_off?0xf1d088:n->color),0);snprintf(b->last,sizeof(b->last),"%s",name);}}
         else if(n->kind==SH_RING)update_ring(b,quota_percent(n->provider<0?selected:n->provider));
     }

@@ -188,6 +188,24 @@ static bool cursor_reset(const cJSON *item, time_t *out)
 static bool cursor(const cJSON *root, sh_service_data_t *data)
 {
     const cJSON *plan = field(root, "planUsage");
+    if (!cJSON_IsObject(plan) || !cursor_reset(field(root, "billingCycleEnd"), &data->reset_at)) return false;
+    const cJSON *auto_used = field(plan, "autoPercentUsed"), *api_used = field(plan, "apiPercentUsed");
+    if (auto_used || api_used) {
+        double percent;
+        if (auto_used) {
+            if (!number(auto_used, 0, 1e6, &percent)) return false;
+            data->has_percent = true;
+            data->remaining_percent = (float)(100 - percent);
+        }
+        if (api_used) {
+            if (!number(api_used, 0, 1e6, &percent)) return false;
+            data->has_secondary = true;
+            data->secondary_percent = (float)(100 - percent);
+            data->secondary_reset_at = data->reset_at;
+        }
+        strcpy(data->window_label, "使用率");
+        return true;
+    }
     double limit, used;
     if (!cJSON_IsObject(plan) || !number(field(plan, "limit"), 0, INT_MAX, &limit) ||
         !number(field(plan, "includedSpend"), 0, INT_MAX, &used) ||
@@ -282,8 +300,8 @@ esp_err_t sh_ai_fetch(sh_account_id_t id, const sh_account_credentials_t *creden
                       uint32_t network_generation, sh_service_data_t *out)
 {
     if (!credentials || !out || !credentials->access_token || !credentials->access_token[0]) return ESP_ERR_INVALID_ARG;
-    size_t token_length = strlen(credentials->access_token);
-    if (token_length >= SH_AUTH_TOKEN_MAX) return ESP_ERR_INVALID_ARG;
+    size_t token_length = strnlen(credentials->access_token, SH_AUTH_TOKEN_MAX + 1);
+    if (token_length > SH_AUTH_TOKEN_MAX) return ESP_ERR_INVALID_ARG;
     for (size_t i = 0; i < token_length; ++i)
         if ((unsigned char)credentials->access_token[i] < 0x21 || (unsigned char)credentials->access_token[i] > 0x7e) return ESP_ERR_INVALID_ARG;
     const char *url, *method = "GET", *body = NULL;

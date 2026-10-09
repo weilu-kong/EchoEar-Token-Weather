@@ -239,7 +239,7 @@ def save_record(record):
 
 
 def fixture_checks():
-    """Synthetic checks only; deliberately not invoked while testing is paused."""
+    """Synthetic checks only; never starts login or accesses credential stores."""
     verifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
     assert challenge(verifier) == "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM"
     assert callback_result("/auth/callback?state=fixture&code=sample", "fixture") == {"code": "sample"}

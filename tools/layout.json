@@ -57,15 +57,22 @@
       "name": "Cursor",
       "remaining": 28,
       "total": 100,
-      "has_total": true,
+      "has_total": false,
       "color": "#ea8066",
       "state": "ready",
       "valid": true,
       "demo": true,
-      "unit": "credits",
+      "unit": "",
       "window_minutes": 0,
       "updated": "10/8 10:20",
-      "reset": "未提供"
+      "reset": "10/20",
+      "cursorBuckets": true,
+      "percent": 32,
+      "secondary": {
+        "percent": 89
+      },
+      "percentOnly": true,
+      "window_label": "TEAM"
     }
   ],
   "weather": {
@@ -126,16 +133,16 @@
           "type": "text",
           "key": "date",
           "x": 239,
-          "y": 108,
-          "size": 11.5,
+          "y": 115,
+          "size": 14,
           "weight": 500,
-          "w": 163
+          "w": 180
         },
         {
           "type": "text",
           "key": "clock",
           "x": 235,
-          "y": 142,
+          "y": 149,
           "size": 44,
           "weight": 700,
           "w": 152
@@ -144,7 +151,7 @@
           "type": "icon",
           "icon": "pin",
           "x": 210,
-          "y": 185,
+          "y": 182,
           "w": 15,
           "h": 18
         },
@@ -152,7 +159,7 @@
           "type": "text",
           "text": "東京",
           "x": 245,
-          "y": 185,
+          "y": 182,
           "size": 14,
           "weight": 600,
           "w": 47
@@ -161,7 +168,7 @@
           "type": "icon",
           "key": "weather_icon",
           "x": 204,
-          "y": 220,
+          "y": 213,
           "w": 27,
           "h": 27,
           "color": "#f3d080"
@@ -170,7 +177,7 @@
           "type": "text",
           "key": "temperature",
           "x": 255,
-          "y": 220,
+          "y": 213,
           "size": 32,
           "weight": 700,
           "w": 99
@@ -179,17 +186,17 @@
           "type": "text",
           "key": "home_condition",
           "x": 242,
-          "y": 251,
-          "size": 13,
-          "w": 140
+          "y": 243,
+          "size": 15,
+          "w": 162
         },
         {
           "type": "text",
           "key": "highlow",
           "x": 243,
-          "y": 273,
-          "size": 12,
-          "w": 118,
+          "y": 267,
+          "size": 14,
+          "w": 130,
           "color": "#f1d088"
         },
         {
@@ -412,8 +419,8 @@
         {
           "type": "text",
           "key": "weather_updated",
-          "x": 203,
-          "y": 318,
+          "x": 190,
+          "y": 311,
           "size": 10,
           "w": 160,
           "color": "#d3d9d4"
@@ -450,7 +457,7 @@
           "y": 127,
           "size": 12,
           "weight": 600,
-          "w": 79
+          "w": 96
         },
         {
           "type": "text",
@@ -483,9 +490,9 @@
           "text": "Antigravity",
           "x": 244,
           "y": 127,
-          "size": 10.5,
+          "size": 10,
           "weight": 600,
-          "w": 81
+          "w": 96
         },
         {
           "type": "text",
@@ -493,7 +500,7 @@
           "provider": 1,
           "x": 244,
           "y": 163,
-          "size": 11.5,
+          "size": 12,
           "weight": 600,
           "w": 112
         },
@@ -518,9 +525,9 @@
           "text": "Claude Code",
           "x": 116,
           "y": 257,
-          "size": 10.5,
+          "size": 10,
           "weight": 600,
-          "w": 84
+          "w": 96
         },
         {
           "type": "text",
@@ -555,7 +562,7 @@
           "y": 257,
           "size": 12,
           "weight": 600,
-          "w": 79
+          "w": 96
         },
         {
           "type": "text",
@@ -580,7 +587,7 @@
           "type": "text",
           "x": 180,
           "y": 315,
-          "size": 10.5,
+          "size": 10,
           "w": 66,
           "color": "#f1d088",
           "key": "quota_status"
@@ -626,24 +633,24 @@
         {
           "type": "logo",
           "provider": "selected",
-          "x": 231,
-          "y": 82,
+          "x": 217,
+          "y": 52,
           "w": 25,
           "h": 25
         },
         {
           "type": "text",
           "key": "service",
-          "x": 232,
-          "y": 112,
+          "x": 218,
+          "y": 79,
           "size": 17,
           "weight": 600,
           "w": 143
         },
         {
           "type": "text",
-          "x": 232,
-          "y": 132,
+          "x": 218,
+          "y": 102,
           "size": 10,
           "w": 143,
           "color": "#f1d088",
@@ -652,17 +659,17 @@
         {
           "type": "ring",
           "provider": "selected",
-          "x": 234,
-          "y": 201,
-          "r": 53,
+          "x": 220,
+          "y": 174,
+          "r": 60,
           "width": 10,
           "color": "#58e6d1"
         },
         {
           "type": "text",
           "key": "detail_main",
-          "x": 234,
-          "y": 189,
+          "x": 220,
+          "y": 159,
           "size": 38,
           "weight": 700,
           "w": 121
@@ -670,85 +677,86 @@
         {
           "type": "text",
           "key": "detail_balance",
-          "x": 234,
-          "y": 221,
-          "size": 13,
+          "x": 220,
+          "y": 190,
+          "size": 10,
           "weight": 500,
-          "w": 126
+          "w": 112,
+          "color": "#f1d088"
+        },
+        {
+          "type": "panel",
+          "x": 110,
+          "y": 239,
+          "w": 190,
+          "h": 68,
+          "alpha": 0.98
         },
         {
           "type": "text",
           "key": "detail_unit",
-          "x": 234,
-          "y": 248,
+          "x": 220,
+          "y": 210,
           "size": 10,
           "w": 148,
           "color": "#d3d9d4"
         },
         {
-          "type": "panel",
-          "x": 132,
-          "y": 270,
-          "w": 165,
-          "h": 43,
-          "alpha": 0.85
-        },
-        {
           "type": "icon",
           "icon": "clock",
-          "x": 145,
-          "y": 282,
+          "x": 124,
+          "y": 273,
           "w": 12,
           "h": 12
         },
         {
           "type": "text",
-          "x": 222,
-          "y": 282,
+          "x": 213,
+          "y": 273,
           "size": 10,
-          "w": 143,
+          "w": 158,
           "key": "reset"
         },
         {
           "type": "icon",
           "icon": "calendar",
-          "x": 145,
-          "y": 302,
+          "x": 124,
+          "y": 295,
           "w": 12,
           "h": 12
         },
         {
           "type": "text",
-          "x": 222,
-          "y": 302,
+          "x": 213,
+          "y": 295,
           "size": 10,
-          "w": 143,
+          "w": 158,
           "key": "updated"
         },
         {
           "type": "text",
           "key": "secondary_reset",
-          "x": 231,
-          "y": 261,
+          "x": 205,
+          "y": 251,
           "size": 10,
           "weight": 500,
-          "w": 166,
+          "w": 184,
           "color": "#d3d9d4"
         }
       ],
       "hits": [
         {
-          "x": 175,
-          "y": 147,
-          "w": 118,
-          "h": 108,
+          "x": 155,
+          "y": 114,
+          "w": 130,
+          "h": 120,
           "action": "next-provider"
         },
         {
-          "x": 132,
-          "y": 270,
-          "w": 165,
-          "h": 43,
+          "x": 110,
+          "y": 239,
+          "w": 190,
+          "h": 68,
           "action": "quota"
         }
       ]
@@ -808,7 +816,7 @@
           "x": 45,
           "y": 48,
           "w": 270,
-          "h": 285,
+          "h": 296,
           "alpha": 0.94
         },
         {
@@ -843,9 +851,9 @@
           "type": "text",
           "key": "event_time:0",
           "x": 180,
-          "y": 136,
-          "w": 240,
-          "h": 27,
+          "y": 126,
+          "w": 230,
+          "h": 31,
           "size": 14,
           "weight": 500,
           "color": "#f1d088"
@@ -854,26 +862,26 @@
           "type": "text",
           "key": "event_title:0",
           "x": 180,
-          "y": 177,
-          "w": 240,
-          "h": 54,
+          "y": 176,
+          "w": 230,
+          "h": 62,
           "size": 14,
           "weight": 500,
           "color": "#fffaf0"
         },
         {
           "type": "line",
-          "x": 62,
-          "y": 209,
-          "w": 236
+          "x": 67,
+          "y": 208,
+          "w": 226
         },
         {
           "type": "text",
           "key": "event_time:1",
           "x": 180,
-          "y": 228,
-          "w": 240,
-          "h": 27,
+          "y": 224,
+          "w": 230,
+          "h": 31,
           "size": 14,
           "weight": 500,
           "color": "#f1d088"
@@ -882,24 +890,24 @@
           "type": "text",
           "key": "event_title:1",
           "x": 180,
-          "y": 269,
-          "w": 240,
-          "h": 54,
+          "y": 274,
+          "w": 230,
+          "h": 62,
           "size": 14,
           "weight": 500,
           "color": "#fffaf0"
         },
         {
           "type": "line",
-          "x": 62,
-          "y": 301,
-          "w": 236
+          "x": 67,
+          "y": 306,
+          "w": 226
         },
         {
           "type": "text",
           "key": "calendar_page",
           "x": 180,
-          "y": 308,
+          "y": 315,
           "w": 160,
           "size": 10,
           "weight": 500,
@@ -909,8 +917,8 @@
           "type": "text",
           "key": "calendar_updated",
           "x": 180,
-          "y": 324,
-          "w": 150,
+          "y": 332,
+          "w": 140,
           "size": 10,
           "weight": 500,
           "color": "#bfcfc7"
@@ -925,17 +933,17 @@
           "action": "home"
         },
         {
-          "x": 58,
-          "y": 120,
-          "w": 244,
-          "h": 86,
+          "x": 62,
+          "y": 110,
+          "w": 236,
+          "h": 97,
           "action": "event:0"
         },
         {
-          "x": 58,
-          "y": 212,
-          "w": 244,
-          "h": 86,
+          "x": 62,
+          "y": 208,
+          "w": 236,
+          "h": 97,
           "action": "event:1"
         }
       ]
@@ -951,7 +959,7 @@
           "x": 45,
           "y": 48,
           "w": 270,
-          "h": 269,
+          "h": 288,
           "alpha": 0.94
         },
         {
@@ -986,52 +994,52 @@
           "type": "text",
           "key": "event_title",
           "x": 180,
-          "y": 141,
-          "w": 238,
+          "y": 140,
+          "w": 230,
           "size": 14,
           "weight": 500,
           "color": "#fffaf0",
-          "h": 54
+          "h": 62
         },
         {
           "type": "text",
           "key": "event_time",
           "x": 180,
-          "y": 185,
-          "w": 238,
+          "y": 190,
+          "w": 230,
           "size": 14,
           "weight": 500,
           "color": "#f1d088",
-          "h": 27
+          "h": 31
         },
         {
           "type": "text",
           "key": "event_location",
           "x": 180,
-          "y": 219,
-          "w": 238,
+          "y": 225,
+          "w": 230,
           "size": 14,
           "weight": 500,
           "color": "#fffaf0",
-          "h": 27
+          "h": 31
         },
         {
           "type": "text",
           "key": "event_description",
           "x": 180,
-          "y": 270,
-          "w": 238,
+          "y": 275,
+          "w": 220,
           "size": 14,
           "weight": 500,
           "color": "#fffaf0",
-          "h": 54
+          "h": 62
         },
         {
           "type": "text",
           "key": "calendar_updated",
           "x": 180,
-          "y": 309,
-          "w": 200,
+          "y": 323,
+          "w": 130,
           "size": 10,
           "weight": 500,
           "color": "#bfcfc7"
@@ -1098,5 +1106,11 @@
       }
     ]
   },
-  "calendar_line_height": 27
+  "calendar_line_height": 31,
+  "background_offset": [
+    3,
+    7
+  ],
+  "small_text_increment": 2,
+  "calendar_font_baseline": 9
 }

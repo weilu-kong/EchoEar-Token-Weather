@@ -35,7 +35,9 @@ assert(fs.existsSync(html), 'Offline preview has not been generated');
     }
     geometry.push({ id, textNodes: boxes.length, issues: 0 });
   };
-  for (const id of ['home', 'weather', 'quota', 'detail', 'standby']) {
+  const pages = await page.evaluate(() => pageIds);
+  assert.equal(pages.length, 7, 'Current delivery has seven pages');
+  for (const id of pages) {
     if (id === 'standby') {
       await page.locator('#clock-input').fill('22:18');
       await page.evaluate(() => setWeather({ temp: 20, code: 3, isDay: false }));
@@ -43,7 +45,20 @@ assert(fs.existsSync(html), 'Offline preview has not been generated');
     await page.locator(`[data-page="${id}"]`).click();
     assert.equal(await page.evaluate(() => currentPage), id);
     await audit(id);
+    if(id==='home') {
+      const sizes=await page.evaluate(()=>window.layoutAudit.map(n=>({text:n.text,size:n.size})));
+      assert.equal(sizes.find(n=>n.text==='10:28').size,44,'Large clock stays unchanged');
+      assert.equal(sizes.find(n=>n.text==='東京').size,16,'City remains unchanged');
+      assert.equal(sizes.find(n=>n.text==='2026年10月8日(木)').size,16,'Date increases another 2px');
+      assert.equal(sizes.find(n=>n.text==='晴れ').size,17,'Condition increases another 2px');
+      assert.equal(sizes.find(n=>n.text.includes('↑')).size,16,'High/low matches the city size');
+      assert.equal(sizes.find(n=>n.text==='AI利用状況').size,15,'Footer text increases by 2px');
+    }
     await page.locator('#lcd').screenshot({ path: path.join(root, 'preview', `${id}.png`) });
+  }
+  for (let provider = 0; provider < 4; provider++) {
+    await page.evaluate(p => navigate('detail', p), provider);
+    await audit(`detail-provider-${provider}`);
   }
   await page.evaluate(() => resetDemo());
   const lcdBox = await page.locator('#lcd').boundingBox();
@@ -119,6 +134,10 @@ assert(fs.existsSync(html), 'Offline preview has not been generated');
   await page.locator('#lcd').screenshot({ path: path.join(root, 'preview', '09_pairing_error.png') });
   await page.evaluate(() => { resetDemo(); setWeather({ status: 'stale' }); navigate('weather'); });
   await audit('weather-stale');
+  await page.evaluate(() => { setWeather({status:'stale',code:0}); navigate('home'); });
+  assert.match(await readout(), /更新失敗・晴れ/);
+  await audit('home-weather-stale');
+  await page.evaluate(() => navigate('weather'));
   await page.locator('#lcd').screenshot({ path: path.join(root, 'preview', '10_weather_stale.png') });
   await page.evaluate(() => { setWeather({ status: 'empty' }); });
   await audit('weather-empty');
@@ -128,9 +147,9 @@ assert(fs.existsSync(html), 'Offline preview has not been generated');
   assert.deepEqual(errors, [], 'Browser JavaScript errors');
   assert.deepEqual(requests, [], 'Offline preview must not request remote resources');
   fs.writeFileSync(path.join(root, 'tests', 'results.json'), JSON.stringify({
-    pages: 5, states: 6, jsErrors: errors, remoteRequests: requests, geometry,
+    pages: pages.length, states: 6, jsErrors: errors, remoteRequests: requests, geometry,
     checks: ['navigation', 'swipe', 'quota-zero', 'quota-full', 'quota-no-total', 'quota-total-edit', 'weather-zero', 'weather-empty', 'weather-unknown-icon', 'disconnect', 'home-disconnected', 'reconnect', 'forget-confirmation', 'keyboard-confirmation', 'reprovision', 'pairing-idle', 'standby-wake'],
   }, null, 2) + '\n');
-  console.log('PASS: 5 pages, network/error states, quota boundaries, Wi-Fi transitions, standby/wake; 0 JS errors; 0 remote requests.');
+  console.log('PASS: 7 pages, network/error states, quota boundaries, Wi-Fi transitions, standby/wake; 0 JS errors; 0 remote requests.');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exit(1); });

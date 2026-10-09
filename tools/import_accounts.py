@@ -53,8 +53,13 @@ def main():
     args = parser.parse_args()
     try:
         accounts = records(args.file)
-        with serial.Serial(args.port, 115200, timeout=0.2, write_timeout=5) as connection:
-            time.sleep(4)  # Opening USB can reset the board; wait for its console.
+        connection = serial.Serial(port=None, baudrate=115200, timeout=0.2, write_timeout=5)
+        connection.dtr = False
+        connection.rts = False
+        connection.port = args.port
+        connection.open()
+        with connection:
+            time.sleep(8)  # Opening USB can reset the board; wait for its console without asserting reset signals.
             connection.reset_input_buffer()
             for provider, command in accounts:
                 for start in range(0, len(command), 128):

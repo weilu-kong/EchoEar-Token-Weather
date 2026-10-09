@@ -34,3 +34,21 @@ Google Calendar 与 Codex 的已有独立授权不受此项影响。Antigravity 
 这些项未闭合前，不生成 `tools/antigravity_authorize.py`，不导入猜测凭据，界面保持未配置/未连接。后续得到可核对的完整契约后，一次性工具才可采用随机 state、PKCE、固定 HTTPS 端点、受限回环回调及原子私有文件写入；输出仅需设备现有 `sh_auth` 接受的 `provider=antigravity`、`access_token`、`refresh_token`、`client_id`、`client_secret`、`project`、`scope` 与 `expires_at`，电脑关闭后由 ESP32 独立刷新和查询。
 
 SDK 与已批准的独立设备架构保持原状。这里记录的是源码研究结果，不是授权成功或设备运行验证。
+
+## 2026-10-09 接续研究结论
+
+再次复查官方[FAQ](https://antigravity.google/docs/faq)和[CLI安装/授权](https://antigravity.google/docs/cli/install/)。FAQ对第三方软件访问和将CLI包装进第三方应用仍有明确限制，CLI文档的远程URL/手动代码流程仍未公开本项目需要的完整OAuth客户端、刷新、project与额度REST契约。这里不能把官方CLI可登录推导成设备接入已闭合。当前个人账号独立接入保持未配置；没有安装CLI、读取凭据或发起授权。本轮继续推进可复现交付，后续需要能核对的完整、适用的只读设备接入契约才能实施。
+
+## 官方SDK路径核对
+
+继续核对[Antigravity SDK overview](https://antigravity.google/docs/sdk/overview/)：公开quickstart使用Gemini API key，Enterprise路径使用GCP project/location及Cloud凭据；SDK为本地Python agent运行时，另链接托管Agent API。该页面没有给出本项目所需的消费订阅个人OAuth额度只读REST接口。不能把API key/Enterprise用量当作个人Antigravity订阅余额，也不能让本项目运行时依赖本地SDK进程。没有安装SDK、发起请求或读取账户。
+
+结合[FAQ](https://antigravity.google/docs/faq)的第三方访问/CLI包装限制，公开SDK目前不能闭合个人设备授权缺口；后续若用户选择新的功能方向，应更新原计划，避免反复将文档复查当作接入进展。
+
+## 用户截图修正目标与额度接口证据
+
+截图展示Antigravity的Gemini Models和Claude and GPT models两组，各有Weekly/Five Hour剩余比例；用户随后确认本项目Gemini只取Gemini Models组。独立Claude卡片必须取其Claude桌面端/Claude Code账户的订阅额度，不能用Antigravity内Claude/GPT组替代。官方[Models](https://www.antigravity.google/docs/models/)也显示这四行。原fetchAvailableModels最小模型残量适配器不等于这四个窗口，不能据此前的实现声称已支持截图。
+
+官方[Statusline](https://antigravity.google/docs/cli/statusline/)公开quota map、remaining_fraction/reset_time/reset_in_seconds和gemini-weekly示例。这是CLI脚本stdin接口，包含其他会话资料；没有读取用户文件/会话，不能把整个payload导入或视为HTTP响应。
+
+只读静态检查本机官方language_server protobuf descriptor及HTTP绑定，发现RetrieveUserQuotaRequest.project；RetrieveUserQuotaResponse.buckets；BucketInfo字段remaining_amount(1)/remaining_fraction(5，oneof remaining)、reset_time(2)、token_type(3)、model_id(4)，以及POST /v1internal:retrieveUserQuota。没有发现能由这些字段直接证明四个窗口映射的证据；未发起请求。下一步应追踪该接口的调用、bucket标识与个人授权同一路径，不能仅凭字段存在就切换生产端点。
